@@ -643,7 +643,7 @@ import sys
 
 def _main():
     filename = sys.argv[1]
-    input = open(filename)
+    input = open(filename,'rb')
     field = RBitfield(input)
 
     magic = field.readbits(16)
