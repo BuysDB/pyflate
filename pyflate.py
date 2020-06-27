@@ -110,7 +110,7 @@ class HuffmanLength:
         self.bits = bits
         self.symbol = None
     def __repr__(self):
-        return repr((self.code, self.bits, self.symbol, self.reverse_symbol))
+        return repr((self.code, self.bits, self.symbol))
     def __cmp__(self, other):
         if self.bits == other.bits:
             return cmp(self.code, other.code)
