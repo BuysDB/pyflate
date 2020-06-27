@@ -102,6 +102,8 @@ def printbits(v, n):
         v >>= 1
     return o
 
+def cmp(x, y): return (x > y) - (x < y)
+
 class HuffmanLength:
     def __init__(self, code, bits = 0):
         self.code = code
@@ -114,6 +116,24 @@ class HuffmanLength:
             return cmp(self.code, other.code)
         else:
             return cmp(self.bits, other.bits)
+
+    def __lt__(self, other):
+        return self.__cmp__(other) < 0
+
+    def __le__(self, other):
+        return self.__cmp__(other) <= 0
+
+    def __eq__(self, other):
+        return self.__cmp__(other) == 0
+
+    def __ne__(self, other):
+        return self.__cmp__(other) != 0
+
+    def __ge__(self, other):
+        return self.__cmp__(other) >= 0
+
+    def __gt__(self, other):
+        return self.__cmp__(other) > 0
 
 def reverse_bits(v, n):
     a = 1 << 0
