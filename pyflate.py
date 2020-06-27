@@ -14,6 +14,8 @@
 # see 'bwt_reverse()'.  Correct output is produced in all test cases
 # but ideally the problem would be found...
 
+import sys
+
 class BitfieldBase:
     def __init__(self, x):
         if isinstance(x,BitfieldBase):
@@ -305,7 +307,7 @@ def bwt_reverse(L, end):
     return out
 
 # Sixteen bits of magic have been removed by the time we start decoding
-def bzip2_main(input):
+def bzip2_main(input, out_handle):
     b = RBitfield(input)
 
     method = b.readbits(8)
@@ -465,10 +467,11 @@ def bzip2_main(input):
             break
         else:
             raise ValueError("Illegal Bzip2 blocktype")
-    return out
+
+    out_handle.write(out)
 
 # Sixteen bits of magic have been removed by the time we start decoding
-def gzip_main(field):
+def gzip_main(field, out_handle):
     b = Bitfield(field)
     method = b.readbits(8)
     if method != 8:
@@ -497,11 +500,12 @@ def gzip_main(field):
         b.readbits(16)
 
     print("gzip header skip", b.tell())
-    out = ''
+
 
     #print 'header 0 count 0 bits', b.tellbits()
 
     while True:
+        out = ''
         header_start = b.tell()
         bheader_start = b.tellbits()
         print('new block at', b.tell())
@@ -656,28 +660,37 @@ def gzip_main(field):
     print('deflate-end-of-stream')
     #print 'crc', hex(crc), 'final length', final_length
     #print 'header 0 count 0 bits', b.tellbits()-bfooter_start
+    out_handle.write(out)
 
-    return out
+    return b.tell()
 
-import sys
+
 
 def _main():
     filename = sys.argv[1]
-    input = open(filename,'rb')
-    field = RBitfield(input)
 
-    magic = field.readbits(16)
-    if magic == 0x1f8b: # GZip
-        out = gzip_main(field)
-    elif magic == 0x425a: # BZip2
-        out = bzip2_main(field)
-    else:
-        raise "Unknown file magic "+hex(magic)+", not a gzip/bzip2 file"
+    with open(filename,'rb') as in_file,  open('out', 'w') as out_handle:
+        field = RBitfield(in_file)
 
-    f = open('out', 'w')
-    f.write(out)
-    f.close()
-    input.close()
+        magic = field.readbits(16)
+        if magic == 0x1f8b: # GZip
+            last_position = gzip_main(field, out_handle)
+
+            # Try to read a next block, including Magic bits...
+            while True:
+                try:
+                    magic = field.readbits(16)
+                    print(magic)
+                    last_position = gzip_main(field, out_handle)
+                except Exception as e:
+                    print(e, magic)
+                    break
+
+        elif magic == 0x425a: # BZip2
+            bzip2_main(field, out_handle)
+        else:
+            raise ValueError("Unknown file magic "+hex(magic)+", not a gzip/bzip2 file")
+
 
 if __name__=='__main__':
     if len(sys.argv) != 2:
