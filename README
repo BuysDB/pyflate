@@ -2,6 +2,8 @@ Copyright 2006--2007-01-21 Paul Sladen
 
   http://www.paul.sladen.org/projects/compression/
 
+Port to Python 3.8 and some bugs fixed by Buys de Barbanson
+
 You may use and distribute this code and documentation under any
 DFSG-compatible license (eg. BSD, GNU GPLv2).
 
@@ -35,5 +37,5 @@ Wikipedia pages with useful technical descriptions:
 Perhaps you could check and see if they could be improved!
 
 	-Paul Sladen, 2007-01-22
--- 
+--
 Southampton, GB
