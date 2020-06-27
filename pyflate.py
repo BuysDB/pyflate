@@ -45,7 +45,7 @@ class BitfieldBase:
         while n >= self.bits and n > 7:
             n -= self.bits
             self.bits = 0
-            n -= len(self.f._read(n >> 3)) << 3
+            n -= len(self._read(n >> 3)) << 3
         if n:
             self.readbits(n)
         # No return value
